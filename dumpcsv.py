@@ -5,6 +5,12 @@ from bs4 import BeautifulSoup
 import pandas as pd
 from datetime import datetime
 
+# Timezone conversion to Singapore Time
+singapore_zone = pytz.timezone('Asia/Singapore')
+sg_datetime = datetime.now(singapore_zone).strftime("%d-%m-%Y_%H")
+sg_date = datetime.now(singapore_zone).strftime("%d-%m-%Y")
+sg_hour = datetime.now(singapore_zone).strftime("%H")
+
 legend = [
     {"Code": "BPlus", "Name": "Bugis +"},
     {"Code": "CQ", "Name": "Clarke Quay"},
@@ -44,6 +50,8 @@ for box in boxes:
     
     record = {
         "Code": name,
+        "Date": sg_date,
+        "Hour": sg_hour,
         "Available Lots": available_lots
     }
 
@@ -53,16 +61,12 @@ df_legend = pd.DataFrame(legend)
 df = pd.DataFrame(locations)
 df_final = df_legend.merge(df, left_on="Code", right_on="Code")
 
-# Timezone conversion to Singapore Time
-singapore_zone = pytz.timezone('Asia/Singapore')
-sg_time = datetime.now(singapore_zone).strftime("%Y-%m-%d_%H")
-
 # Create the tiprank folder if it doesn't exist
 if not os.path.exists('JustPark'):
     os.makedirs('JustPark')
 
 # Create CSV filename with current date and time
-csv_filename = f"JustPark/JustPark_{sg_time}.csv"
+csv_filename = f"JustPark/JustPark_{sg_datetime}.csv"
   
 # Dump dataframe to CSV
 df_final.to_csv(csv_filename, index=False)
